@@ -29,6 +29,8 @@ public class MineSweeper extends Application {
 
     private Tile[][] grid = new Tile[countTileX][countTileY];
 
+    private boolean firstClick = true;
+
     private Parent createMineSweeper(){
 
         Pane root = new Pane();
@@ -44,18 +46,19 @@ public class MineSweeper extends Application {
             }
         }
 
+        setBombCountText();
+        return root;
+    }
+
+    private void setBombCountText(){
         for(int i = 0; i < countTileX; i++) {
             for(int j = 0; j < countTileY; j++) {
-
                 Tile toCheck = grid[i][j];
-
                 if(!toCheck.hasBomb()){
                     toCheck.setText(String.valueOf(countBomb(toCheck)));
                 }
             }
         }
-
-        return root;
     }
 
     private void revealBomb(int x, int y){
@@ -73,6 +76,14 @@ public class MineSweeper extends Application {
     }
 
     private void openTile(Tile tile) {
+
+        if(firstClick){
+            firstClick = false;
+            if(tile.hasBomb()){
+                tile.setBomb(false);
+            }
+            setBombCountText();
+        }
 
         tile.openTile();
         this.game = tile.getGame();

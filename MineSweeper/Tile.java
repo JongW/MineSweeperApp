@@ -92,6 +92,10 @@ public class Tile extends StackPane {
         return hasBomb;
     }
 
+    public void setBomb(boolean setBomb){
+        hasBomb = setBomb;
+    }
+
     public void setText(String text){
         this.text.setText(text);
 
