@@ -58,12 +58,14 @@ public class MineSweeper extends Application {
         return root;
     }
 
-    private void revealBomb(){
+    private void revealBomb(int x, int y){
         for(int i = 0; i < countTileX; i++) {
             for(int j = 0; j < countTileY; j++) {
                 Tile tile = grid[i][j];
-                if (tile.hasBomb()){
+                //dont set the initial bomb u triggerd transparent as well
+                if (tile.hasBomb() && i != x && j != y){
                     Text text = tile.getText();
+                    tile.getTileBorder().setFill(null);
                     text.setVisible(true);
                 }
             }
@@ -78,10 +80,10 @@ public class MineSweeper extends Application {
         //check if the game is over
         if (!game) {
             System.out.println("GAME IS OVER");
-            revealBomb();
+            revealBomb(tile.getX(),tile.getY());
         }
 
-        if (tile.getString().equals("0")) {
+        if (tile.getString().isEmpty()) {
             List<Tile> tiles = getNeighbours(tile);
             for (Tile gameTile : tiles) {
                 if(!gameTile.getOpen())
@@ -139,6 +141,7 @@ public class MineSweeper extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        primaryStage.setTitle("MineSweeper");
         primaryStage.setScene(new Scene(createMineSweeper()));
         primaryStage.show();
     }

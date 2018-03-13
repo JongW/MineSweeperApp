@@ -15,12 +15,12 @@ public class Tile extends StackPane {
     private Boolean isOpen = false;
     private Boolean game = true;
 
+    private Rectangle border = new Rectangle(20,20);
+
     public Tile(int x, int y, Boolean hasBomb){
         this.x = x;
         this.y = y;
         this.hasBomb = hasBomb;
-
-        Rectangle border = new Rectangle(20,20);
 
         //set bomb
         if(hasBomb){
@@ -37,8 +37,8 @@ public class Tile extends StackPane {
         setTranslateY(y*20);
 
         //set border
-        border.setFill(null);
-        border.setStroke(Color.LIGHTGREY);
+        border.setFill(Color.LIGHTGREY);
+        border.setStroke(Color.BLACK);
 
         getChildren().addAll(border, text);
 
@@ -50,10 +50,13 @@ public class Tile extends StackPane {
         }
         else{
             if(hasBomb){
+                border.setFill(Color.RED);
+                text.setVisible(true);
                 game = false;
             }
             else{
                 isOpen = true;
+                border.setFill(null);
                 text.setVisible(true);
             }
         }
@@ -61,6 +64,10 @@ public class Tile extends StackPane {
 
     public Text getText(){
         return text;
+    }
+
+    public Rectangle getTileBorder() {
+        return border;
     }
 
     public String getString(){
@@ -89,8 +96,8 @@ public class Tile extends StackPane {
         this.text.setText(text);
 
         switch(text){
-//            case "0":
-//                this.text.setText("");
+            case "0":
+                this.text.setText(null);
 //                this.text.setVisible(false);
             case "1" :
                 this.text.setFill(Color.BLUE);
@@ -105,7 +112,7 @@ public class Tile extends StackPane {
                 this.text.setFill(Color.DARKBLUE);
                 break;
             case "5":
-                this.text.setFill(Color.BEIGE);
+                this.text.setFill(Color.PURPLE);
                 break;
         }
     }
