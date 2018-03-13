@@ -1,8 +1,10 @@
 package MineSweeper;
 
 import javafx.application.Application;
+import javafx.geometry.HPos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -25,16 +27,31 @@ public class MineSweeper extends Application {
     private int countTileX = W/20;
     private int countTileY = H/20;
 
+    //variables to clear at the start of every game
     private Boolean game = true;
+    private boolean firstClick = true;
 
     private Tile[][] grid = new Tile[countTileX][countTileY];
+    
+//    private int bombCount;
 
-    private boolean firstClick = true;
+    private Stage primaryStage;
 
     private Parent createMineSweeper(){
 
-        Pane root = new Pane();
-        root.setPrefSize(W,H);
+        GridPane root = new GridPane();
+
+//        Text text = new Text("hi");
+//        root.add(text,0,0);
+
+        Button newGame = new Button("New Game");
+        newGame.setOnAction(Action -> restart());
+
+        root.setHalignment(newGame, HPos.CENTER);
+        root.add(newGame,0,0);
+
+        Pane game = new Pane();
+        game.setPrefSize(W,H);
 
         for(int i = 0; i < countTileX; i++) {
             for(int j = 0; j < countTileY; j++) {
@@ -42,11 +59,13 @@ public class MineSweeper extends Application {
                 grid[i][j] = tile;
 
                 tile.setOnMouseClicked(action -> openTile(tile));
-                root.getChildren().add(tile);
+                game.getChildren().add(tile);
             }
         }
 
         setBombCountText();
+
+        root.add(game,0,4);
         return root;
     }
 
@@ -55,6 +74,7 @@ public class MineSweeper extends Application {
             for(int j = 0; j < countTileY; j++) {
                 Tile toCheck = grid[i][j];
                 if(!toCheck.hasBomb()){
+//                    bombCount++;
                     toCheck.setText(String.valueOf(countBomb(toCheck)));
                 }
             }
@@ -151,10 +171,21 @@ public class MineSweeper extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage){
+        this.primaryStage = primaryStage;
         primaryStage.setTitle("MineSweeper");
         primaryStage.setScene(new Scene(createMineSweeper()));
         primaryStage.show();
+    }
+
+    void restart() {
+        cleanup();
+        start(primaryStage);
+    }
+
+    void cleanup() {
+        game = true;
+        firstClick = true;
     }
 
     public static void main(String[] args) {
