@@ -5,17 +5,17 @@ import javafx.geometry.HPos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.sql.SQLOutput;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,8 +32,9 @@ public class MineSweeper extends Application {
     private boolean firstClick = true;
 
     private Tile[][] grid = new Tile[countTileX][countTileY];
-    
-//    private int bombCount;
+
+    private int bombCount = 0;
+    private int isOpen = 0;
 
     private Stage primaryStage;
 
@@ -41,10 +42,15 @@ public class MineSweeper extends Application {
 
         GridPane root = new GridPane();
 
-//        Text text = new Text("hi");
-//        root.add(text,0,0);
+        Image imgSmiley = new Image("file:resources\\img\\smiley.png");
+        ImageView smiley = new ImageView(imgSmiley);
+        smiley.setFitWidth(35);
+        smiley.setFitHeight(35);
 
-        Button newGame = new Button("New Game");
+        Image imgFlag = new Image("file:resources\\img\\flag.png");
+        ImagePattern flag = new ImagePattern(imgFlag);
+
+        Button newGame = new Button("",smiley);
         newGame.setOnAction(Action -> restart());
 
         root.setHalignment(newGame, HPos.CENTER);
@@ -58,13 +64,36 @@ public class MineSweeper extends Application {
                 Tile tile = new Tile(i,j,Math.random() < 0.2);
                 grid[i][j] = tile;
 
-                tile.setOnMouseClicked(action -> openTile(tile));
+                tile.setOnMouseClicked(action -> {
+                    if(action.getButton() == MouseButton.PRIMARY)
+                        if(this.game) {
+                            openTile(tile);
+                        }
+                    if(action.getButton() == MouseButton.SECONDARY){
+                        if (this.game) {
+                            if (!tile.hasFlag()) {
+                                tile.getTileBorder().setFill(flag);
+                                tile.setFlag(true);
+                            } else {
+                                tile.getTileBorder().setFill(Color.LIGHTGREY);
+                                tile.setFlag(false);
+                            }
+                        }
+                    }
+                });
                 game.getChildren().add(tile);
             }
         }
 
+        for(int i = 0; i < countTileX; i++) {
+            for(int j = 0; j < countTileY; j++) {
+                Tile tile = grid[i][j];
+                if(tile.hasBomb()){
+                    bombCount++;
+                }
+            }
+        }
         setBombCountText();
-
         root.add(game,0,4);
         return root;
     }
@@ -74,7 +103,6 @@ public class MineSweeper extends Application {
             for(int j = 0; j < countTileY; j++) {
                 Tile toCheck = grid[i][j];
                 if(!toCheck.hasBomb()){
-//                    bombCount++;
                     toCheck.setText(String.valueOf(countBomb(toCheck)));
                 }
             }
@@ -85,7 +113,7 @@ public class MineSweeper extends Application {
         for(int i = 0; i < countTileX; i++) {
             for(int j = 0; j < countTileY; j++) {
                 Tile tile = grid[i][j];
-                //dont set the initial bomb u triggerd transparent as well
+                //don't set the initial bomb u triggered transparent as well
                 if (tile.hasBomb() && i != x && j != y){
                     Text text = tile.getText();
                     tile.getTileBorder().setFill(null);
@@ -112,6 +140,13 @@ public class MineSweeper extends Application {
         if (!game) {
             System.out.println("GAME IS OVER");
             revealBomb(tile.getX(),tile.getY());
+        }
+
+        isOpen++;
+
+        if(isOpen/2 > bombCount){
+            gameWon();
+            return;
         }
 
         if (tile.getString().isEmpty()) {
@@ -170,6 +205,9 @@ public class MineSweeper extends Application {
         return count;
     }
 
+    private void gameWon(){
+        System.out.println("You Won");
+    }
     @Override
     public void start(Stage primaryStage){
         this.primaryStage = primaryStage;
@@ -184,6 +222,8 @@ public class MineSweeper extends Application {
     }
 
     void cleanup() {
+        isOpen = 0;
+        bombCount = 0;
         game = true;
         firstClick = true;
     }
