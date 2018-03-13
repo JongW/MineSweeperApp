@@ -5,6 +5,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
+import java.util.List;
+
 public class Tile extends StackPane {
 
     private Boolean hasBomb;
@@ -51,6 +53,7 @@ public class Tile extends StackPane {
                 game = false;
             }
             else{
+                isOpen = true;
                 text.setVisible(true);
             }
         }
@@ -61,9 +64,12 @@ public class Tile extends StackPane {
     }
 
     public String getString(){
-        return text.toString();
+        return text.getText();
     }
 
+    public boolean getOpen(){
+        return isOpen;
+    }
     public boolean getGame(){
         return game;
     }
@@ -85,6 +91,7 @@ public class Tile extends StackPane {
         switch(text){
 //            case "0":
 //                this.text.setText("");
+//                this.text.setVisible(false);
             case "1" :
                 this.text.setFill(Color.BLUE);
                 break;

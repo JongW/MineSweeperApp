@@ -70,28 +70,27 @@ public class MineSweeper extends Application {
         }
     }
 
-    private void openTile(Tile tile){
+    private void openTile(Tile tile) {
+
         tile.openTile();
         this.game = tile.getGame();
 
         //check if the game is over
-        if(!game){
+        if (!game) {
             System.out.println("GAME IS OVER");
             revealBomb();
         }
 
-//        //opening mines that are have 0 proximity mines
-//        if(tile.getText().toString().equals("0")){
-//            List<Tile> tiles = getNeighbours(tile);
-//            for(Tile gameTile : tiles){
-//                if(gameTile.getText().toString().equals("0")){
-//                    openTile(gameTile);
-//                }
-//            }
-//        }
+        if (tile.getString().equals("0")) {
+            List<Tile> tiles = getNeighbours(tile);
+            for (Tile gameTile : tiles) {
+                if(!gameTile.getOpen())
+                    openTile(gameTile);
+            }
+        }
     }
 
-    private List<Tile> getNeighbours(Tile tile){
+    public List<Tile> getNeighbours(Tile tile){
         List<Tile> neighbours = new ArrayList<>();
 
         //xxx
